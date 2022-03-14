@@ -1,8 +1,49 @@
+body {
+  background-color: #E5E5E5;;
+}
+
 .App {
   text-align: center;
+  padding: 1rem;
 }
 
-.project-card {
-  border: solid;
+h1 {
+  text-align: left;
 }
 
+ul {
+  list-style-type: none;
+}
+
+button {
+  cursor: pointer;
+}
+
+.main-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.container-child {
+  background: #FFFFFF;
+  margin: .5rem;
+  box-shadow: 3px 3px 11px rgba(131, 133, 143, 0.13);
+  border-radius: 4px;
+  height: fit-content;
+  min-height: 50vh;
+  max-height: 100vh;
+  overflow: scroll;
+  padding-bottom: 1rem;
+}
+
+.line-item {
+  display: flex;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border: 0.75px solid #D7D5D5;
+  box-sizing: border-box;
+  box-shadow: 3px 3px 11px rgba(24, 179, 226, 0.13);
+  border-radius: 4px;
+  margin: 1rem;
+  padding: 5px;
+}
