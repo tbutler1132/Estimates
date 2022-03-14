@@ -52,6 +52,30 @@ function Project() {
         // setInclusiveItems(inclusiveArr)
     }, [])
 
+    const createItem = (type, cost, title) => {
+
+        const updatedArray = (array) => {
+
+            function randomIntFromInterval(min, max) { // min and max included 
+                return Math.floor(Math.random() * (max - min + 1) + min)
+            }
+            const rndInt = randomIntFromInterval(1, 500)
+
+            return [...array, { id: rndInt, cost, title}]
+        }
+
+        if(type === "Material"){
+            setMaterialItems(updatedArray(materialItems))
+        }
+        if(type === "Labor"){
+            setLaborItems(updatedArray(laborItems))
+        }
+        if(type === "Inclusive"){
+            setInclusiveItems(updatedArray(inclusiveItems))
+        }
+
+    }
+
 
     const updateItems = (id, type, {cost, title}) => {
         
@@ -102,28 +126,6 @@ function Project() {
         return estimate
     }
 
-    const sortItems = () => {
-        const obj = {
-            materialItems: [],
-            laborItems: [],
-            inclusiveItems: [],
-        }
-        
-        lineItems.forEach(item => {
-            if(item.type === "material"){
-                obj.materialItems.push(item)
-            }
-            if(item.type === "labor"){
-                obj.laborItems.push(item)
-            }
-            if(item.type === "inclusive"){
-                obj.inclusiveItems.push(item)
-            }
-        })
-
-        return obj
-    }
-
 
     // const renderLineItems = () => {
     //     return lineItems.map(item => 
@@ -135,16 +137,17 @@ function Project() {
         <div>
             <h1>Estimate: ${calculateEstimate(lineItems)}</h1>
             <div className="main-container">
-                <LineItemsContainer type="Material" calculateEstimate={calculateEstimate} items={materialItems} updateItem={updateItems} deleteItem={deleteItem} />
-                <LineItemsContainer type="Labor" calculateEstimate={calculateEstimate} items={laborItems} updateItem={updateItems} deleteItem={deleteItem}/>
-                <LineItemsContainer type="Inclusive" calculateEstimate={calculateEstimate} items={inclusiveItems} updateItem={updateItems} deleteItem={deleteItem}/>
+                <LineItemsContainer type="Material" calculateEstimate={calculateEstimate} items={materialItems} createItem={createItem} updateItem={updateItems} deleteItem={deleteItem} />
+                <LineItemsContainer type="Labor" calculateEstimate={calculateEstimate} items={laborItems} createItem={createItem} updateItem={updateItems} deleteItem={deleteItem}/>
+                <LineItemsContainer type="Inclusive" calculateEstimate={calculateEstimate} items={inclusiveItems} createItem={createItem} updateItem={updateItems} deleteItem={deleteItem}/>
             </div>
         </div>
     );
 }
 
-function LineItemsContainer({ type, items, updateItem, calculateEstimate, deleteItem }){
+function LineItemsContainer({ type, items, updateItem, calculateEstimate, createItem, deleteItem }){
     
+    const [modalOpen, toggleModal] = useState(false)
 
     const renderLineItems = () => {
         return items.map(item => 
@@ -152,40 +155,46 @@ function LineItemsContainer({ type, items, updateItem, calculateEstimate, delete
         )
     }
 
-    const addItemHandler = () => {
+    function closeModal() {
+        toggleModal(false);
+    }
 
+    const addItemHandler = (cost, title) => {
+        toggleModal(false)
+        createItem(type, cost, title)
     }
 
     return (
         <div className="container-child">
             <h3>{type} Costs</h3>
-            <button>Add {type} Cost</button>
+            <button onClick={() => toggleModal(true)}>Add {type} Cost</button>
             <p>Total: {calculateEstimate(items)}</p>
             <ul>{renderLineItems()}</ul>    
+            <ItemModal open={modalOpen} submit={addItemHandler} close={closeModal}/>
         </div>
     )
 }
 
 function LineItem({ item, type, update, deleteItem }){
-    const [title, setTitle] = useState("")
-    const [cost, setCost] = useState(0)
+    // const [title, setTitle] = useState("")
+    // const [cost, setCost] = useState(0)
     const [editMode, toggleEditMode] = useState(false)
 
     const clickHandler = () => {
-        setTitle(item.title)
-        setCost(item.cost)
+        // setTitle(item.title)
+        // setCost(item.cost)
         toggleEditMode(!editMode)
     }
 
-    const titleChangeHandler = (e) => {
-        setTitle(e.target.value)
-    }
+    // const titleChangeHandler = (e) => {
+    //     setTitle(e.target.value)
+    // }
 
-    const costChangeHandler = (e) => {
-        setCost(e.target.value)
-    }
+    // const costChangeHandler = (e) => {
+    //     setCost(e.target.value)
+    // }
 
-    const submitHandler = (e) => {
+    const submitHandler = (cost, title) => {
         toggleEditMode(false)
         update(item.id, type, {cost, title})
     }
@@ -194,48 +203,45 @@ function LineItem({ item, type, update, deleteItem }){
         deleteItem(item.id, type)
     }
 
-    function openModal() {
-        toggleEditMode(true);
-    }
-
     
     function closeModal() {
         toggleEditMode(false);
     }
 
 
-    const renderModal = () => {
-       return (
-        <ReactModal
-            isOpen={editMode}
-            onRequestClose={closeModal}
-            style={customStyles}
-            contentLabel="Example Modal"
-        >
-            <div>
-                <form onSubmit={submitHandler}>
-                    <input
-                    defaultValue={title}
-                    onChange={titleChangeHandler} 
-                    />
-                    <input
-                    defaultValue={cost}
-                    onChange={costChangeHandler}  
-                    type="number"
-                    />
-                    <button type="submit">Save</button>
-                </form>
-                <button onClick={closeModal}>close</button>
-            </div>
-        </ReactModal>   
-       ) 
-    }
+    // const renderModal = () => {
+    //    return (
+    //     <ReactModal
+    //         isOpen={editMode}
+    //         onRequestClose={closeModal}
+    //         style={customStyles}
+    //         contentLabel="Example Modal"
+    //     >
+    //         <div>
+    //             <form onSubmit={submitHandler}>
+    //                 <input
+    //                 defaultValue={title}
+    //                 onChange={titleChangeHandler} 
+    //                 />
+    //                 <input
+    //                 defaultValue={cost}
+    //                 onChange={costChangeHandler}  
+    //                 type="number"
+    //                 />
+    //                 <button type="submit">Save</button>
+    //             </form>
+    //             <button onClick={closeModal}>close</button>
+    //         </div>
+    //     </ReactModal>   
+    //    ) 
+    // }
 
     return (
         <div>
         {editMode 
         ? 
-            renderModal()
+            // renderModal()
+            <ItemModal currentTitle={item.title} currentCost={item.cost} open={editMode} close={closeModal} submit={submitHandler}/>
         :
             <li>
                 <div className="line-item">
@@ -252,6 +258,53 @@ function LineItem({ item, type, update, deleteItem }){
         }
         </div>
     );
+}
+
+function ItemModal({ currentTitle, currentCost, open, close, submit }){
+    const [title, setTitle] = useState(currentTitle || "")
+    const [cost, setCost] = useState(currentCost || 0)
+
+
+    const titleChangeHandler = (e) => {
+        setTitle(e.target.value)
+    }
+
+    const costChangeHandler = (e) => {
+        setCost(e.target.value)
+    }
+
+    const closeModal = () => {
+        close()
+    }
+
+    const submitHandler = () => {
+        submit(cost, title)
+    }
+
+    return (
+        <ReactModal
+        isOpen={open}
+        onRequestClose={closeModal}
+        style={customStyles}
+        contentLabel="Example Modal"
+        >
+        <div>
+            <form onSubmit={submitHandler}>
+                <input
+                defaultValue={title}
+                onChange={titleChangeHandler} 
+                />
+                <input
+                defaultValue={cost}
+                onChange={costChangeHandler}  
+                type="number"
+                />
+                <button type="submit">Save</button>
+            </form>
+            <button onClick={closeModal}>close</button>
+        </div>
+    </ReactModal>  
+    )
 }
 
 export default Project;
