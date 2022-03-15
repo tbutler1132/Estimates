@@ -24,14 +24,29 @@ a {
   color: "white"
 }
 
+.project-manager {
+  padding-left: 3%;
+}
+
+.project-container {
+  display: flex;
+  flex-direction: column;
+}
+
 .main-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  margin-top: 1rem;
 }
 
 @media only screen and (max-width: 1100px) {
   .main-container {
     grid-template-columns: 1fr;
+    justify-items: center;
+  }
+  .container-child {
+    width: 50%;
+    margin: auto;
   }
 }
 

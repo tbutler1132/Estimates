@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { materialItemsDB, laborItemsDB, inclusiveItemsDB } from "../database";
+import { useState } from "react";
 import Button from '@mui/material/Button'
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -27,12 +26,6 @@ function Project() {
     const [laborItems, setLaborItems] = useState([])
     const [inclusiveItems, setInclusiveItems] = useState([])
 
-    useEffect(() => {
-        // setMaterialItems(materialItemsDB)
-        // setLaborItems(laborItemsDB)
-        // setInclusiveItems(inclusiveItemsDB)
-    }, [])
-
     const createItem = (type, cost, title) => {
 
         const updatedArray = (array) => {
@@ -51,14 +44,14 @@ function Project() {
         if(type === "Labor"){
             setLaborItems(updatedArray(laborItems))
         }
-        if(type === "Inclusive"){
+        if(type === "All_Inclusive"){
             setInclusiveItems(updatedArray(inclusiveItems))
         }
 
     }
 
 
-    const updateItems = (id, type, {cost, title}) => {
+    const updateItems = (id, type, cost, title) => {
         
         const updatedArray = (array) => {
             let idx = array.findIndex(item => item.id === id)
@@ -73,7 +66,7 @@ function Project() {
         if(type === "Labor"){
             setLaborItems(updatedArray(laborItems))
         }
-        if(type === "Inclusive"){
+        if(type === "All_Inclusive"){
             setInclusiveItems(updatedArray(inclusiveItems))
         }
     }
@@ -93,19 +86,10 @@ function Project() {
         if(type === "Labor"){
             setLaborItems(updatedArray(laborItems))
         }
-        if(type === "Inclusive"){
+        if(type === "All_Inclusive"){
             setInclusiveItems(updatedArray(inclusiveItems))
         }
 
-    }
-
-    const sort = (type, category) => {
-        const sortedArray = (array) => {
-            return [...array].sort((a,b) => (a.title > b.title) ? 1 : ((b.title > a.title) ? -1 : 0))
-        }
-
-
-        setMaterialItems(sortedArray(materialItems))
     }
 
     const calculateEstimate = (arr) => {
@@ -113,25 +97,27 @@ function Project() {
         arr.forEach(item => {
             estimate = estimate + Number(item.cost)
         })
-        return estimate
+        return estimate.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
     }
 
     return (
-        <div>
-            <h1>Estimate: ${calculateEstimate(materialItems.concat(laborItems).concat(inclusiveItems))}</h1>
-            <div className="main-container">
-                <LineItemsContainer type="Material" sort={sort} calculateEstimate={calculateEstimate} items={materialItems} createItem={createItem} updateItem={updateItems} deleteItem={deleteItem} />
-                <LineItemsContainer type="Labor" calculateEstimate={calculateEstimate} items={laborItems} createItem={createItem} updateItem={updateItems} deleteItem={deleteItem}/>
-                <LineItemsContainer type="Inclusive" calculateEstimate={calculateEstimate} items={inclusiveItems} createItem={createItem} updateItem={updateItems} deleteItem={deleteItem}/>
+        <div className="project-container">
+            <div style={{marginLeft: ".5rem"}}>
+                <h1>Estimate: ${calculateEstimate(materialItems.concat(laborItems).concat(inclusiveItems))}</h1>
+                <Link to="/">
+                    <Button style={{float: "left"}} size="large" variant="outlined">Save</Button>
+                </Link>
             </div>
-            <Link to="/">
-                <Button variant="contained">Save</Button>
-            </Link>
+            <div className="main-container">
+                <LineItemsContainer type="Material" calculateEstimate={calculateEstimate} items={materialItems} createItem={createItem} updateItem={updateItems} deleteItem={deleteItem} />
+                <LineItemsContainer type="Labor" calculateEstimate={calculateEstimate} items={laborItems} createItem={createItem} updateItem={updateItems} deleteItem={deleteItem}/>
+                <LineItemsContainer type="All_Inclusive" calculateEstimate={calculateEstimate} items={inclusiveItems} createItem={createItem} updateItem={updateItems} deleteItem={deleteItem}/>
+            </div>
         </div>
     );
 }
 
-function LineItemsContainer({ type, items, updateItem, calculateEstimate, createItem, deleteItem, sort }){
+function LineItemsContainer({ type, items, updateItem, calculateEstimate, createItem, deleteItem }){
     
     const [modalOpen, toggleModal] = useState(false)
 
@@ -150,32 +136,26 @@ function LineItemsContainer({ type, items, updateItem, calculateEstimate, create
         createItem(type, cost, title)
     }
 
-    const sortHandler = (category) => {
-        console.log(category)
-        sort()
-    }
 
     return (
         <div className="container-child">
-            <h3>{type} Costs</h3>
+            <h2>{type.replace(/_/g, " ")} Costs</h2>
             <h5>Total: ${calculateEstimate(items)}</h5>
-            <Button color="success" variant="contained" onClick={() => toggleModal(true)}>Add {type} Cost</Button>
+            <Button color="success" variant="contained" onClick={() => toggleModal(true)}>Add {type.replace(/_/g, " ")} Cost</Button>
             {items.length ? 
             <ul>
                 <li>
                     <div id="line-item-header" className="line-item">
                         <div style={{display: "flex", justifyContent: "space-between", width: "70%" }}>
-                            <span onClick={() => sortHandler("title")} style={{marginLeft: "10px"}}>Item</span>
-                            <span onClick={sortHandler}>Cost</span>
+                            <span style={{marginLeft: "10px"}}>Item</span>
+                            <span>Cost</span>
                         </div>
-                        {/* <div>
-                        </div> */}
                     </div>
                 </li>
                 {renderLineItems()}
             </ul>    
             :
-            <h3>You currently have no items</h3>}
+            <h3>You currently have no {type.replace(/_/g, " ").toLowerCase()} items</h3>}
             <ItemModal open={modalOpen} submit={addItemHandler} close={closeModal}/>
         </div>
     )
@@ -190,10 +170,10 @@ function LineItem({ item, type, update, deleteItem }){
 
     const submitHandler = (cost, title) => {
         toggleEditMode(false)
-        update(item.id, type, {cost, title})
+        update(item.id, type, cost, title)
     }
 
-    const deleteHandler = (e) => {
+    const deleteHandler = () => {
         deleteItem(item.id, type)
     }
 
@@ -212,7 +192,7 @@ function LineItem({ item, type, update, deleteItem }){
                 <div className="line-item">
                     <div style={{display: "flex", alignItems: "center", justifyContent: "space-between", width: "70%", minHeight: "fit-content" }}>
                         <span id="item-title">{item.title}</span>
-                        <span>${item.cost}</span>
+                        <span>${item.cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</span>
                     </div>
                     <div className="line-item-buttons">
                         <EditIcon style={{cursor: "pointer"}} onClick={clickHandler}/>
@@ -244,6 +224,8 @@ function ItemModal({ currentTitle, currentCost, open, close, submit }){
 
     const submitHandler = () => {
         submit(cost, title)
+        setTitle("")
+        setCost(0)
     }
 
     return (
@@ -260,6 +242,7 @@ function ItemModal({ currentTitle, currentCost, open, close, submit }){
                 onChange={titleChangeHandler} 
                 label="Item"
                 size="small"
+                required
                 />
                 <TextField
                 defaultValue={cost}

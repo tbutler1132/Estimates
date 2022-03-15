@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 function ProjectManager() {
 
     return (
-        <div>
+        <div className='project-manager'>
             <h1>Project Manager</h1>
             <Link to="project">
                 <Button style={{float: "left"}} color="success" variant="contained">
