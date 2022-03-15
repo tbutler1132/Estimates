@@ -1,3 +1,10 @@
+export const projectsDB = [
+    {
+        id: 1,
+        title: "Project 1"
+    }
+]
+
 export const materialItemsDB = [
     {
         id: 1,
