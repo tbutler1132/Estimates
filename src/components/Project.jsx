@@ -103,7 +103,7 @@ function Project() {
     return (
         <div className="project-container">
             <div style={{marginLeft: ".5rem"}}>
-                <h1>Estimate: ${calculateEstimate(materialItems.concat(laborItems).concat(inclusiveItems))}</h1>
+                <h1>Total Estimate: ${calculateEstimate(materialItems.concat(laborItems).concat(inclusiveItems))}</h1>
                 <Link to="/">
                     <Button style={{float: "left"}} size="large" variant="outlined">Save</Button>
                 </Link>
@@ -140,22 +140,22 @@ function LineItemsContainer({ type, items, updateItem, calculateEstimate, create
     return (
         <div className="container-child">
             <h2>{type.replace(/_/g, " ")} Costs</h2>
-            <h5>Total: ${calculateEstimate(items)}</h5>
+            <h5>{type.replace(/_/g, " ")} Costs Estimate: ${calculateEstimate(items)}</h5>
             <Button color="success" variant="contained" onClick={() => toggleModal(true)}>Add {type.replace(/_/g, " ")} Cost</Button>
             {items.length ? 
             <ul>
                 <li>
                     <div id="line-item-header" className="line-item">
                         <div style={{display: "flex", justifyContent: "space-between", width: "70%" }}>
-                            <span style={{marginLeft: "10px"}}>Item</span>
-                            <span>Cost</span>
+                            <span className="table-header" style={{marginLeft: "10px"}}>Item</span>
+                            <span className="table-header">Cost</span>
                         </div>
                     </div>
                 </li>
                 {renderLineItems()}
             </ul>    
             :
-            <h3>You currently have no {type.replace(/_/g, " ").toLowerCase()} items</h3>}
+            <h4>No {type.replace(/_/g, " ").toLowerCase()} costs</h4>}
             <ItemModal open={modalOpen} submit={addItemHandler} close={closeModal}/>
         </div>
     )

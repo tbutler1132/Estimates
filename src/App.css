@@ -62,6 +62,10 @@ a {
   padding-bottom: 1rem;
 }
 
+.table-header {
+  text-decoration: underline;
+}
+
 .line-item {
   display: flex;
   justify-content: space-between;
